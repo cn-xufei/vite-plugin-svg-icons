@@ -5,7 +5,7 @@
   "license": "MIT",
   "author": "Vben",
   "scripts": {
-    "stub": "pnpm run prepack --filter ./packages -- --stub",
+    "stub": "pnpm  -F ./packages prepack --stub",
     "postinstall": "pnpm run stub",
     "log": "conventional-changelog -p angular -i CHANGELOG.md -s",
     "lint:pretty": "pretty-quick --staged",
@@ -24,12 +24,9 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/anncwb/vite-plugin-svg-icons"
+    "url": "https://github.com/cn-xufei/vite-plugin-svg-icons"
   },
-  "bugs": {
-    "url": "https://github.com/anncwb/vite-plugin-svg-i cons/issues"
-  },
-  "homepage": "https://github.com/anncwb/vite-plugin-svg-icons/tree/master/#readme",
+  "homepage": "https://github.com/cn-xufei/vite-plugin-svg-icons",
   "devDependencies": {
     "@commitlint/cli": "^16.1.0",
     "@commitlint/config-conventional": "^16.0.0",
@@ -52,6 +49,7 @@
     "typescript": "^4.5.5",
     "unbuild": "^0.6.9",
     "vite": "^2.7.13",
+    "vite-plugin-svg-icons": "^2.0.1",
     "vitest": "^0.2.5"
   },
   "lint-staged": {

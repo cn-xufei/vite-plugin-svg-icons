@@ -233,6 +233,45 @@ Then the generated SymbolId is written in the comment
 - dir/dir2/icon1.svg # icon-dir-dir2-icon1
 ```
 
+**svgoOptions?.exclude**
+
+Exclude icon folder that do not want to apply svgoOptions
+
+example:
+
+```js
+{
+  iconDirs: [
+    path.resolve(process.cwd(), 'src/assets/icons/svg'),
+    path.resolve(process.cwd(), 'src/assets/icons/colorSvg'),
+  ],
+  symbolId: 'icon-[name]',
+  svgoOptions: {
+    exclude: [
+      path.resolve(process.cwd(), 'src/assets/icons/colorSvg'),
+    ],
+    plugins: [
+      { name: 'removeTitle', active: true },
+      { name: 'removeStyleElement', active: true },
+      {
+        name: 'removeAttributesBySelector',
+        params: {
+          selector: ':not(path[fill=\'none\'])',
+          attributes: ['fill'],
+        },
+      },
+      {
+        name: 'removeAttrs',
+        active: true,
+        params: {
+          attrs: ['class', 'p-id'],
+        },
+      },
+    ]
+  }
+}
+```
+
 ## Typescript Support
 
 If using `Typescript`, you can add in `tsconfig.json`

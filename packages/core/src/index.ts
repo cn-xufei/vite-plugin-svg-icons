@@ -1,6 +1,11 @@
 import type { Plugin } from 'vite'
-import type { OptimizedSvg, OptimizeOptions } from 'svgo'
-import type { ViteSvgIconsPlugin, FileStats, DomInject } from './typing'
+import type { OptimizedSvg } from 'svgo'
+import type {
+  ViteSvgIconsPlugin,
+  FileStats,
+  DomInject,
+  SvgoOptions,
+} from './typing'
 import fg from 'fast-glob'
 import getEtag from 'etag'
 import cors from 'cors'
@@ -72,7 +77,7 @@ export function createSvgIconsPlugin(opt: ViteSvgIconsPlugin): Plugin {
 
       const { code, idSet } = await createModuleCode(
         cache,
-        svgoOptions as OptimizeOptions,
+        svgoOptions as SvgoOptions,
         options,
       )
       if (isRegister) {
@@ -94,7 +99,7 @@ export function createSvgIconsPlugin(opt: ViteSvgIconsPlugin): Plugin {
           res.setHeader('Cache-Control', 'no-cache')
           const { code, idSet } = await createModuleCode(
             cache,
-            svgoOptions as OptimizeOptions,
+            svgoOptions as SvgoOptions,
             options,
           )
           const content = url.endsWith(registerId) ? code : idSet
@@ -112,7 +117,7 @@ export function createSvgIconsPlugin(opt: ViteSvgIconsPlugin): Plugin {
 
 export async function createModuleCode(
   cache: Map<string, FileStats>,
-  svgoOptions: OptimizeOptions,
+  svgoOptions: SvgoOptions,
   options: ViteSvgIconsPlugin,
 ) {
   const { insertHtml, idSet } = await compilerIcons(cache, svgoOptions, options)
@@ -165,11 +170,12 @@ function domInject(inject: DomInject = 'body-last') {
 /**
  * Preload all icons in advance
  * @param cache
+ * @param svgOptions
  * @param options
  */
 export async function compilerIcons(
   cache: Map<string, FileStats>,
-  svgOptions: OptimizeOptions,
+  svgOptions: SvgoOptions,
   options: ViteSvgIconsPlugin,
 ) {
   const { iconDirs } = options
@@ -178,6 +184,12 @@ export async function compilerIcons(
   const idSet = new Set<string>()
 
   for (const dir of iconDirs) {
+    let _svgOptions: boolean | SvgoOptions = svgOptions
+
+    if (svgOptions!.exclude?.includes(dir)) {
+      _svgOptions = false
+    }
+
     const svgFilsStats = fg.sync('**/*.svg', {
       cwd: dir,
       stats: true,
@@ -194,7 +206,11 @@ export async function compilerIcons(
       const getSymbol = async () => {
         relativeName = normalizePath(path).replace(normalizePath(dir + '/'), '')
         symbolId = createSymbolId(relativeName, options)
-        svgSymbol = await compilerIcon(path, symbolId, svgOptions)
+        svgSymbol = await compilerIcon(
+          path,
+          symbolId,
+          _svgOptions as SvgoOptions,
+        )
         idSet.add(symbolId)
       }
 
@@ -226,7 +242,7 @@ export async function compilerIcons(
 export async function compilerIcon(
   file: string,
   symbolId: string,
-  svgOptions: OptimizeOptions,
+  svgOptions: SvgoOptions,
 ): Promise<string | null> {
   if (!file) {
     return null
