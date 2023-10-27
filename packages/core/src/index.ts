@@ -185,9 +185,11 @@ export async function compilerIcons(
 
   for (const dir of iconDirs) {
     let _svgOptions: boolean | SvgoOptions = svgOptions
+    let clearStroke = true
 
     if (svgOptions!.exclude?.includes(dir)) {
       _svgOptions = false
+      clearStroke = false
     }
 
     const svgFilsStats = fg.sync('**/*.svg', {
@@ -210,6 +212,7 @@ export async function compilerIcons(
           path,
           symbolId,
           _svgOptions as SvgoOptions,
+          clearStroke,
         )
         idSet.add(symbolId)
       }
@@ -243,6 +246,7 @@ export async function compilerIcon(
   file: string,
   symbolId: string,
   svgOptions: SvgoOptions,
+  clearStroke = true,
 ): Promise<string | null> {
   if (!file) {
     return null
@@ -255,8 +259,13 @@ export async function compilerIcon(
     content = data || content
   }
 
-  // fix cannot change svg color  by  parent node problem
-  content = content.replace(/stroke="[a-zA-Z#0-9]*"/, 'stroke="currentColor"')
+  if (clearStroke) {
+    content = content.replace(
+      /stroke="[a-zA-Z#0-9]*"/g,
+      'stroke="currentColor"',
+    )
+  }
+
   const svgSymbol = await new SVGCompiler().addSymbol({
     id: symbolId,
     content,
