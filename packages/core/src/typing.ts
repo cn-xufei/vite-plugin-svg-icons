@@ -1,4 +1,4 @@
-import type { OptimizeOptions } from 'svgo'
+import { Config as OptimizeOptions } from 'svgo'
 
 export type SvgoOptions = OptimizeOptions & {
   exclude?: string[]

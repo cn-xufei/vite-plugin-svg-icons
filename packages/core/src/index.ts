@@ -1,5 +1,4 @@
 import type { Plugin } from 'vite'
-import type { OptimizedSvg } from 'svgo'
 import type {
   ViteSvgIconsPlugin,
   FileStats,
@@ -13,7 +12,7 @@ import fs from 'fs-extra'
 import path from 'pathe'
 import Debug from 'debug'
 import SVGCompiler from 'svg-baker'
-import { optimize } from 'svgo'
+import { optimize, Output as OptimizedSvg } from 'svgo'
 import { normalizePath } from 'vite'
 import {
   SVG_DOM_ID,
